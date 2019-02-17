@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -7,7 +9,7 @@ import argparse
 
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import SGD
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, TensorBoard
 
 from util import get_lr_scheduler, uniform_noise_model_P
 from datasets import get_data, validatation_split
@@ -109,6 +111,9 @@ def train(dataset='mnist', model_name='d2l', batch_size=128, epochs=50, noise_ra
                                       period=epochs)
         callbacks.append(cp_callback)
 
+    # tensorboard callback
+    callbacks.append(TensorBoard(log_dir='./log/log'))
+
     # learning rate scheduler if use sgd
     lr_scheduler = get_lr_scheduler(dataset)
     callbacks.append(lr_scheduler)
@@ -179,14 +184,14 @@ if __name__ == "__main__":
     parser.set_defaults(batch_size=128)
     parser.set_defaults(noise_ratio=0)
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
 
-#     args = parser.parse_args()
-#     main(args)
+#    args = parser.parse_args()
+#    main(args)
 
     args = parser.parse_args(['-d', 'cifar-10', '-m', 'd2l',
-                                      '-e', '120', '-b', '128',
-                                      '-r', '60'])
+                                     '-e', '120', '-b', '128',
+                                     '-r', '60'])
     main(args)
 
     K.clear_session()
